@@ -8,9 +8,16 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+	"net/mail"
 
 	"golang.org/x/crypto/sha3"
+	"github.com/charmbracelet/log"
 )
+
+func valid(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
+}
 
 type ApiResponse struct {
 	Breaches [][]string `json:"breaches"`
@@ -24,6 +31,10 @@ func sha3Hash(input string) string {
 }
 
 func CheckEmailExposure(email string) (bool, [][]string, error) {
+	if !valid(email) {
+		log.Warn("Email Is Inavlid")
+		return true, nil, nil
+	}
 	url := fmt.Sprintf("https://private-anon-a37cc03621-xposedornot.apiary-proxy.com/v1/check-email/%s", email)
 	resp, err := http.Get(url)
 	if err != nil {
