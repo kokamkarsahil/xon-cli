@@ -64,8 +64,8 @@ func test() {
 				Title("What's your password?").
 				Value(&pass).
 				Validate(func(str string) error {
-					if str == "Frank" {
-						return errors.New("sorry, we don’t serve customers named Frank")
+					if str == "" {
+						return errors.New("Enter a vaild password")
 					}
 					return nil
 				}),
@@ -127,7 +127,7 @@ func test() {
 		}
 		fmt.Println(
 			lipgloss.NewStyle().
-				Width(40).
+				Width(50).
 				BorderStyle(lipgloss.RoundedBorder()).
 				BorderForeground(lipgloss.Color("63")).
 				Padding(1, 2).
