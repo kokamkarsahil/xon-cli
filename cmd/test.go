@@ -19,7 +19,6 @@ import (
 	checker "kokamkarsahil/xon-cli/util"
 )
 
-
 var testCmd = &cobra.Command{
 	Use:   "test",
 	Short: "Test your creds manually",

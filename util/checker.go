@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/mail"
 	"net/url"
 	"strconv"
 	"time"
-	"net/mail"
 
-	"golang.org/x/crypto/sha3"
 	"github.com/charmbracelet/log"
+	"golang.org/x/crypto/sha3"
 )
 
 func valid(email string) bool {

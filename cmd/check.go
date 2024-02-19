@@ -13,21 +13,28 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	columnname string
+	password   string
+)
+
 var checkCmd = &cobra.Command{
 	Use:   "check",
 	Short: "Read csv file",
 	Long: `Reads csv file from cli
 
-Accepts CSV with column name "login_username" or "Login Name"
+Accepts CSV with column name by default "Login Name"
 which are defaults for Bitwarden and KeePass exports
-in case if you have a different column name in exports, please rename it`,
+in case if you have a different column name in exports,
+please pass it by flag name columnname and pass to override
+the defaults.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		readCsvFile(args[0])
+		readCsvFile(args[0], columnname, password)
 	},
 }
 
-func readCsvFile(filePath string) {
+func readCsvFile(filePath string, columnName string, passWord string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		panic(err)
@@ -45,13 +52,12 @@ func readCsvFile(filePath string) {
 	loginEmail := -1
 	passIndex := -1
 	for i, v := range header {
-		if v == "Login Name" || v == "login_username" {
+		if v == columnName {
 			loginEmail = i
-		} else if v == "Password" || v == "login_password" {
+		} else if v == passWord {
 			passIndex = i
 		}
 	}
-
 	// Check if both columns were found
 	if loginEmail == -1 || passIndex == -1 {
 		panic("Columns not found")
@@ -85,8 +91,8 @@ func readCsvFile(filePath string) {
 			exposurePass = safeStyle.Render("Safe")
 		}
 
-		fmt.Fprintln(&sb,"Email: ", row[loginEmail], "Status: ", exposureMessage)
-		fmt.Fprintln(&sb,"Password: ", row[passIndex], "Status: ", exposurePass)
+		fmt.Fprintln(&sb, "Email: ", row[loginEmail], "Status: ", exposureMessage)
+		fmt.Fprintln(&sb, "Password: ", row[passIndex], "Status: ", exposurePass)
 	}
 	fmt.Println(
 		lipgloss.NewStyle().
@@ -99,4 +105,6 @@ func readCsvFile(filePath string) {
 
 func init() {
 	rootCmd.AddCommand(checkCmd)
+	checkCmd.Flags().StringVarP(&columnname, "columnname", "c", "Login Name", "Custom column name.")
+	checkCmd.Flags().StringVarP(&password, "passcolumn", "p", "Password", "Password column name.")
 }
